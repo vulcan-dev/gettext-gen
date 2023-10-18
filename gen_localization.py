@@ -8,6 +8,15 @@ import subprocess
 config = dotenv_values('.env')
 translator: Translator
 
+valid_deepl_translations = [
+    'BG', 'CS', 'DA', 'DE', 'EL', 'EN',
+    'EN-GB', 'EN-US', 'ES', 'ET', 'FI', 'FR',
+    'HU', 'ID', 'IT', 'JA', 'KO', 'LT',
+    'LV', 'NB', 'NL', 'PL', 'PT', 'PT-BR',
+    'PT-PT', 'RO', 'RU', 'SK', 'SL', 'SV',
+    'TR', 'UK', 'ZH',
+]
+
 # A list of files `xgettext` will scan in order to generate the pot file. It scans for the prefix ('_' by default) and `gettext(...)`
 # Use any amount of files you want.
 files: list = [
@@ -65,17 +74,9 @@ def auto_translate_file(path: str, locale: str) -> bool:
 
         # Dummy data
         # translations: list = [ # this is what we will get from translating.
-        #     'libfolders',
-        #     # 'steam path',
-        #     # 'executable',
-        #     # 'no dll',
-        #     # 'aslr',
-        #     # 'createprocess',
-        #     # 'virtualalloc',
-        #     # 'bad write',
-        #     # 'loadlib',
-        #     # 'remotethread'
+        #     'libfolders'
         # ]
+        # Dummy data will work just fine as well. It will replace the first string in "to_translate" with the first string in "translations".
 
         translations = translator.translate_text(to_send, target_lang=locale)
 
@@ -221,7 +222,10 @@ def main() -> None:
 
         # translate the file
         if args.translate and translator and lang != 'en':
-            auto_translate_file(po_file, lang)
+            if lang.upper() not in valid_deepl_translations:
+                print(f'Unable to automatically translate "{lang}", not supported. Skipping.')
+            else:
+                auto_translate_file(po_file, lang)
 
         # format the locales
         mo_file: str = f'{po_dir}/{lang}/{config_domain}.mo'
