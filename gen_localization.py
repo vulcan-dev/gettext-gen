@@ -35,7 +35,6 @@ def check_requirements() -> bool:
     return not failed
 
 def auto_translate_file(path: str, locale: str) -> bool:
-    print(f'Translating {locale}')
     to_translate: list = []
     # line, text
 
